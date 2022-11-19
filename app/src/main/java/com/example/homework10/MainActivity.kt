@@ -11,23 +11,31 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.math.pow
 import kotlin.math.sqrt
-
+import com.example.homework10.databinding.ActivityMainBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
-    private var editTextA: EditText? = null
-    private var editTextB: EditText? = null
-    private var editTextC: EditText? = null
-    private var textViewX1: TextView? = null
-    private var textViewX2: TextView? = null
+    private val fragList = listOf(
+        Equations.newInstance(),
+        Quadraticequations.newInstance()
+    )
+    private val fragListTitles = listOf(
+        "Equations",
+        "Quadratic Equations"
+    )
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) { // ax + b = c // x = (c-b)/a
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        editTextA = findViewById(R.id.edit_text_a)
-        editTextB = findViewById(R.id.edit_text_b)
-        editTextC = findViewById(R.id.edit_text_c)
-        textViewX1 = findViewById(R.id.text_view_x1)
-        textViewX2 = findViewById(R.id.text_view_x2)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val adapter = VpAdapter(this, fragList)
+        binding.vp2.adapter = adapter
+        TabLayoutMediator(binding.ourtablayout, binding.vp2){
+                tab, pos -> tab.text = fragListTitles[pos]
+        }.attach()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = ""
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -46,46 +54,4 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun getDoubleValue(editText: EditText?): Double {
-        if (editText!!.text.toString().isEmpty()) {
-            Toast.makeText(this, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
-            return 0.0
-        }
-        return editText.text.toString().toDouble()
-    }
-    private fun result(editText: EditText?): Double {
-        if (editText!!.text.toString().isEmpty()) {
-            Toast.makeText(this, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
-            return 0.0
-        }
-        return editText.text.toString().toDouble()
-    }
-
-    @SuppressLint("DefaultLocale", "SetTextI18n")
-    fun click(view: View?) {
-        val a = getDoubleValue(editTextA)
-        val b = getDoubleValue(editTextB)
-        val c = getDoubleValue(editTextC)
-        val d = sqrt(b.pow(2) - 4 * a * b)
-        if (d < 0) {
-            textViewX1!!.text = "No solutions"
-            textViewX2!!.text = "No solutions"
-            Toast.makeText(this, "No solutions", Toast.LENGTH_SHORT).show()
-        }
-        else if (d == 0.0){
-            val x = -b / (2 * a)
-            textViewX1!!.text = String.format("%.2f", x)
-            Toast.makeText(this, "x1 = $x", Toast.LENGTH_SHORT).show()
-            textViewX2!!.text = "No solutions"
-            Toast.makeText(this, "x2 = no solutions", Toast.LENGTH_SHORT).show()
-        }
-        else {
-            val x = (-b + d) / (2 * a)
-            textViewX1!!.text = String.format("%.2f", x)
-            Toast.makeText(this, "x1 = $x", Toast.LENGTH_SHORT).show()
-            val x2 = (-b - d) / (2 * a)
-            textViewX2!!.text = String.format("%.2f", x2)
-            Toast.makeText(this, "x2 = $x2", Toast.LENGTH_SHORT).show()
-        }
-    }
 }
